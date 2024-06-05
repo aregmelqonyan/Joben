@@ -12,6 +12,7 @@ const LoginFormCompany = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const navigate = useNavigate();
 
@@ -22,7 +23,8 @@ const LoginFormCompany = () => {
       formData.append('password', password);
       setIsLoading(true);
       const response = await axios.post('https://api.joben.am/login_company', formData);
-      setSuccessMessage("Successfuly logged in!")
+      setSuccessMessage("Successfully logged in!");
+      setErrorMessage('');
       const { access_token, company: loggedInCompany } = response.data;
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('company', loggedInCompany)
@@ -31,9 +33,8 @@ const LoginFormCompany = () => {
      // Assuming backend returns access_token and refresh_token
       // Handle successful login, maybe store tokens in local storage or state
     } catch (error) {
-      setError(error.response.data.detail);
-      console.log('An error occurred:', error);
-      setSuccessMessage("Login Failed!")
+        setErrorMessage("Incorrect email or password!");
+        setSuccessMessage('');
   } finally {
       setIsLoading(false); // Reset loading state
   }
@@ -59,6 +60,7 @@ const LoginFormCompany = () => {
                
                 <button type="button" onClick={handleLogin}>Login</button>
                 {<p>{successMessage}</p>}
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 
             
             <div className={Styles.additional_text}>

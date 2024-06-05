@@ -13,6 +13,7 @@ const LoginForm = () => {
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleLogin = async () => {
         try {
@@ -21,14 +22,14 @@ const LoginForm = () => {
             formData.append('password', password);
             setIsLoading(true); // Set loading state to true
             const response = await axios.post('https://api.joben.am/login', formData);
-            setSuccessMessage("Successfuly logged in!")
+            setSuccessMessage("Successfully logged in!");
+            setErrorMessage('');
             const { access_token } = response.data;
             localStorage.setItem('accessToken', access_token);
             navigate('/');
         } catch (error) {
-            setError(error.response.data.detail);
-            console.log('An error occurred:', error);
-            setSuccessMessage("Login Failed!")
+            setErrorMessage("Incorrect email or password!");
+            setSuccessMessage('');
         } finally {
             setIsLoading(false); // Reset loading state
         }
@@ -67,6 +68,7 @@ const LoginForm = () => {
                             {isLoading ? 'Logging in...' : 'Login'}
                         </button>
                         {<p>{successMessage}</p>}
+                        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                         {userData && <p>User is logged in!</p>}
                         <div className={Styles.additional_text}>
                             <h1>Sign in to</h1>

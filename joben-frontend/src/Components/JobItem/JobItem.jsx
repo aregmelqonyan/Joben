@@ -42,6 +42,13 @@ const JobItem = () => {
     return <div className={styles.loading}>Job not found</div>;
   }
 
+  const deadlineDate = new Date(job.deadline);
+  const formattedDeadline = deadlineDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+  });
+
   return (
     <div><NavBar />
     <div className={styles['job-details']}>
@@ -49,13 +56,12 @@ const JobItem = () => {
       <p>{job.description}</p>
       <p><strong>Company:</strong> {job.company_name}</p>
       <p><strong>Location:</strong> {job.location}</p>
-      <p><strong>Salary:</strong> {job.salary}</p>
       <p><strong>Job Type:</strong> {job.job_type}</p>
       <p><strong>Industry:</strong> {job.industry}</p>
       <p><strong>Level:</strong> {job.level}</p>
       <p><strong>Education Level:</strong> {job.education_level}</p>
       <p><strong>Required Skills:</strong> {job.required_skills}</p>
-      <p><strong>Deadline:</strong> {job.deadline}</p>
+      <p><strong>Deadline:</strong> {formattedDeadline}</p>
       <p><strong>Contact Information:</strong> {job.contact_information}</p>
       <p><strong>Remote Work:</strong> {job.remote_work ? 'Yes' : 'No'}</p>
       <p><strong>Views:</strong> {job.views}</p>

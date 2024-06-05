@@ -68,6 +68,12 @@ async def get_me(user: schemas.CompanySystemUser = Depends(get_current_company_u
 
 @app.post("/register_company")
 def register_company_user(user: schemas.CompanyUserCreate, tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    existed_user = db.query(models.User).filter(models.CompanyUser.email == user.email).first()
+    if existed_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists."
+        )
     verification_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     
     user.password = get_hashed_password(user.password)
@@ -134,7 +140,7 @@ def logout(response: Response):
     """
     Logout endpoint to invalidate the JWT token by setting the 'Authorization' header to an empty string.
     """
-    response.headers["Authorization"] = ""  # Clear the JWT token on the client side
+    response.headers["Authorization"] = ""
     return {"message": "Logout successful"}
 
 @app.get("/get_company_users")
@@ -159,16 +165,15 @@ def get_companyuser_jobs(current_user: models.CompanyUser = Depends(get_current_
 
 @app.post("/register", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOutput)
 def register_user(user: schemas.UserCreate, tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    # Generate a verification code
+    existed_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if existed_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email already exists."
+        )
     verification_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    
-    # Hash the user's password
     user.password = get_hashed_password(user.password)
-    
-    # Create a new user record in the database
     new_user = crud.create_user(user=user, db=db)
-    
-    # Assign the verification code to the new user
     new_user.sended_code = verification_code
     db.commit()
     

@@ -45,7 +45,6 @@ class Job(Base):
     description = Column(String, nullable=False)
     company_name = Column(String(40), nullable=False)
     location = Column(String(30), nullable=False)
-    salary = Column(Integer)
     job_type = Column(String(15), nullable=False)
     industry = Column(String(20), nullable=False)
     level = Column(String(15), nullable=False)

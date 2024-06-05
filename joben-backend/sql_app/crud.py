@@ -53,7 +53,6 @@ def delete_company_user(db: Session, user_id: int):
     return False
 
 def create_user(db: Session, user: schemas.UserCreate):
-   
     email_validator.validmail(user.email)
     # password_validator.ValidPassword(user.password)
     contact_validator.valid_phone(user.contact_info)

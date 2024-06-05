@@ -9,8 +9,8 @@ import Footer from "../../Layout/Footer";
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Adding padding for single-digit months
-    const day = date.getDate().toString().padStart(2, '0'); // Adding padding for single-digit days
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
 
@@ -18,10 +18,23 @@ const PostedJobs = ({ jobTitle }) => {
     const [jobs, setJobs] = useState([]);
     const navigate = useNavigate();
     const [displayedJobsCount, setDisplayedJobsCount] = useState(3);
+    const [isAuthorized, setIsAuthorized] = useState(false); // State to track authorization status
+
+    const accessToken = localStorage.getItem('accessToken');
+    const company = localStorage.getItem('company');
 
     const handleShowMore = () => {
-        setDisplayedJobsCount(prevCount => prevCount + 3);
+        setDisplayedJobsCount((prevCount) => prevCount + 3);
     };
+
+    useEffect(() => {
+        // Check if user is authorized
+        if (accessToken && company) {
+          setIsAuthorized(true);
+        } else {
+          navigate('/login'); // Redirect unauthorized users to login page
+        }
+      }, [accessToken, company, navigate]);
 
     useEffect(() => {
         const fetchJobs = async () => {
@@ -43,7 +56,7 @@ const PostedJobs = ({ jobTitle }) => {
         };
 
         fetchJobs();
-    }, []); // Empty dependency array ensures useEffect runs only once on component mount
+    }, []); 
 
     return (
         <div>

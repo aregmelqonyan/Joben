@@ -71,6 +71,90 @@
   outline: none;
   background: transparent;
 }
+
+.applicationBox .userBox .customSelect {
+  position: relative;
+}
+
+.applicationBox .userBox .customSelect select {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: black;
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid grey;
+  outline: none;
+  background: transparent;
+}
+
+.applicationBox .userBox .customSelect select:focus {
+  border-bottom-color: blue; /* Change border color when focused */
+}
+
+/* .error {
+  color: red;
+} */
+
+textarea {
+  width: 100%;
+  height: 200px; /* Adjust the height as needed */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none; /* Prevent resizing */
+}
+
+/* Style label for textarea */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Style error message */
+/* .error {
+  color: red;
+  margin-top: 2px;
+  font-size: 10px;
+} */
+:root {
+  --error-color: #ff4d4d;
+  --error-font-size: 12px;
+  /* --error-margin-top: 5px; */
+  --error-font-weight: bold;
+  --error-padding: 5px;
+  --error-background: #ffe6e6;
+  --error-border-radius: 5px;
+  --error-font-size: 10px;
+}
+
+.error {
+  color: var(--error-color);
+  /* margin-top: var(--error-margin-top); */
+  font-size: var(--error-font-size);
+  font-weight: var(--error-font-weight);
+  padding: var(--error-padding);
+  background-color: var(--error-background);
+  border-radius: var(--error-border-radius);
+  font-size: var(--error-font-size);
+}
+/* Style character count */
+.char-count {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #777;
+}
+
+
+
+
+
+
+
+
+
+
 .applicationBox .userBox label {
   position: absolute;
   top:0;

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Styles from './RegisterFormCompany.module.css';
 import NavBar from '../../Layout/NavBar';
 import Footer from '../../Layout/Footer';
-import {NavLink, useNavigate} from 'react-router-dom'
-import axios from 'axios'
+import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const RegisterFormCompany = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -19,29 +19,82 @@ const RegisterFormCompany = () => {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [contact_info, setContact_info] = useState('');
+    const [contactInfo, setContactInfo] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [company, setCompany] = useState('');
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
+    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+
     localStorage.setItem("storedEmail", email);
     localStorage.setItem("storedCompany", company);
-    const [successMessage, setSuccessMessage] = useState('');
+
+    const validate = () => {
+        const newErrors = {};
+
+        if (!email) {
+            newErrors.email = 'Email is required';
+        } else if (email.length > 40) {
+            newErrors.email = 'Email can be maximum 40 characters'
+        }
+        else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = 'Email address is invalid';
+        }
+
+        if (!username || username.length > 25) {
+            newErrors.username = 'Username is required and maximum can be 25 characters';
+        }
+
+        if (!contactInfo) {
+            newErrors.contactInfo = 'Contact number is required';
+        } else if (!/^(?:\+374\d{8}|0\d{8,9})$/.test(contactInfo)) {
+            newErrors.contactInfo = 'Contact number is invalid';
+        }
+
+        if (!company) {
+            newErrors.company = 'Company name is required';
+        } else if (company.length > 30) {
+            newErrors.company = 'Company can contain maximum 30 characters'
+        }
+
+        if (!password) {
+            newErrors.password = 'Password is required';
+        } else if (password.length < 8 || password.length > 16) {
+            newErrors.password = 'Password must be at least 8 characters and maximum 16 characters';
+        } else if (!/(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) {
+            newErrors.password = 'Password must contain at least one uppercase letter, one number, and one special character';
+        }
+
+        if (!confirmPassword) {
+            newErrors.confirmPassword = 'Confirm password is required';
+        } else if (password !== confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        if (!validate()) return;
+
         try {
-          setSuccessMessage("Registered Successfully");
-          const verification_code = '';
-          const response = await axios.post('https://api.joben.am/register_company', { username, email, company, contact_info, password, verification_code});
-          console.log(response.data); // Assuming backend returns user data
-          // Redirect to verification component
-          navigate('/verify_company');
+            const verification_code = '';
+            const response = await axios.post('https://api.joben.am/register_company', { username, email, company, contact_info: contactInfo, password, verification_code });
+            setSuccessMessage('Registered Successfully');
+            navigate('/verify_company');
         } catch (error) {
-          setSuccessMessage("Registration failed! ")
-          setError(error.response.data.detail);
+            if (error.response && error.response.status === 400) {
+                setErrors({ form: "Email already used!" });
+                setSuccessMessage("");
+            } else {
+                setErrors({ form: error.response.data.detail });
+                setSuccessMessage("Registration Failed!");
+            }
         }
-      };
+    };
 
     return (
         <div>
@@ -52,45 +105,60 @@ const RegisterFormCompany = () => {
                         <h1>Sign Up</h1>
                         <div className={Styles.input_box}>
                             <input type="text" placeholder='Enter email' value={email} onChange={e => setEmail(e.target.value)} required />
+                            {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
                         </div>
                         <div className={Styles.input_box}>
-                            <input type="text" placeholder='Create User name' value={username} onChange={e => setUsername(e.target.value)} required />
+                            <input type="text" placeholder='Create Username' value={username} onChange={e => setUsername(e.target.value)} required />
+                            {errors.username && <p style={{ color: 'red' }}>{errors.username}</p>}
                         </div>
                         <div className={Styles.input_box}>
-                            <input type="tel" placeholder='Contact number' pattern='^(?:\+374\d{8}|0\d{8,9})$' value={contact_info} onChange={e => setContact_info(e.target.value)} required />
+                            <input type="tel" placeholder='Contact number' pattern='^(?:\+374\d{8}|0\d{8,9})$' value={contactInfo} onChange={e => setContactInfo(e.target.value)} required />
+                            {errors.contactInfo && <p style={{ color: 'red' }}>{errors.contactInfo}</p>}
                         </div>
                         <div className={Styles.input_box}>
                             <input type="text" placeholder='Company name' value={company} onChange={e => setCompany(e.target.value)} required />
+                            {errors.company && <p style={{ color: 'red' }}>{errors.company}</p>}
                         </div>
                         <div className={Styles.input_box}>
-                            <input type={showPassword ? 'text' : 'password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-
-                            <i
-                                className={`fas ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`} // Corrected class
-                                onClick={togglePasswordVisibility}
-                                style={{ color: '#3b5998' }}
-                            ></i>
-                        </div>
-                        <div className={Styles.input_box}>
-                            <input
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                placeholder="Confirm Password"
-                                required
+                            <input 
+                                type={showPassword ? 'text' : 'password'} 
+                                placeholder="Password" 
+                                value={password} 
+                                onChange={e => setPassword(e.target.value)} 
+                                required 
                             />
                             <i
-                                className={`fas ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'}`} // Corrected class
-                                onClick={toggleConfirmPasswordVisibility}
-                                style={{ color: '#3b5998' }}
+                                className={`fas ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`}
+                                onClick={togglePasswordVisibility}
+                                style={{ color: '#3b5998', cursor: 'pointer', marginLeft: '-25px' }}
                             ></i>
+                            {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
+                        </div>
+                        <div className={Styles.input_box}>
+                            <input 
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                placeholder="Confirm Password"
+                                value={confirmPassword}
+                                onChange={e => setConfirmPassword(e.target.value)}
+                                required 
+                            />
+                            <i
+                                className={`fas ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'}`}
+                                onClick={toggleConfirmPasswordVisibility}
+                                style={{ color: '#3b5998', cursor: 'pointer', marginLeft: '-25px' }}
+                            ></i>
+                            {errors.confirmPassword && <p style={{ color: 'red' }}>{errors.confirmPassword}</p>}
                         </div>
                         <button type="submit" method="post">Register</button>
                         {successMessage && <p>{successMessage}</p>}
+                        {errors.server && <p className={Styles.error}>{errors.server}</p>}
+                        {errors.form && <p style={{ color: 'red' }}>{errors.form}</p>}
                         <div className={Styles.additional_text}>
                             <h1>Sign Up to</h1>
-                            <h4>Lorem ipsum is simply</h4>
-                            <p>If you already have an account register</p>
+                            <h4>Easy Registration</h4>
                         </div>
                         <div className={Styles.register_link}>
+                            <p>If you already have an account</p>
                             <p>You can <NavLink to='/login_company'>login here!</NavLink></p>
                         </div>
                         <div className={Styles.adding}>

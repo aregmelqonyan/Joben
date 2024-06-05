@@ -121,7 +121,6 @@ class JobCreateSchema(BaseModel):
     description: str
     company_name: str
     location: str
-    salary: Optional[int] = None
     job_type: str
     industry: str
     level: str

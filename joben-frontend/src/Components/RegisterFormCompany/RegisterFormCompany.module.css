@@ -26,6 +26,23 @@
 
 }
 
+.eyeIconContainer {
+    position: absolute;
+    left: 90%; /* Adjust as needed to control spacing */
+    padding-top: 6%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.eyeIconContainer1 {
+    position: absolute;
+    left: 90%; /* Adjust as needed to control spacing */
+    padding-top: 6%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
 .wrapper {
     width: 420px;
     color: #000;
@@ -131,6 +148,10 @@
 }
 .register_link p a:hover{
     text-decoration: underline;
+}
+
+.register_link p {
+    color: #000;
 }
 
 .additional_text{
